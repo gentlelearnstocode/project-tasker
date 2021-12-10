@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block content %}
+<a href="{% url 'tasks:task-list' %}">Back</a>
+<hr />
+<h3>This is the detail of {{ task.title }}</h3>
+<p>
+  Detail: {{ task.location }}, {{ task.category }}, {{ task.on_date }}, {{
+  task.description }}
+</p>
+<hr />
+<a href="{% url 'tasks:task-update' task.pk %}">Update</a>
+<hr />
+<a href="{% url 'tasks:task-delete' task.pk %}">Delete</a>
+{% endblock content %}
