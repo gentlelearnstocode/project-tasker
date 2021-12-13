@@ -78,8 +78,14 @@
             </svg>
           </div>
           <div class="flex-grow">
+            <h1 class="text-gray-900 text-lg title-font font-medium mb-3">
+              {{ task.title }} 
+            </h1>
             <h2 class="text-gray-900 text-lg title-font font-medium mb-3">
-              {{ task.title }} {{ task.on_date }}
+              {{ task.time }}  
+            </h2>
+            <h2 class="text-gray-900 text-lg title-font font-medium mb-3">
+              {{ task.on_date }} 
             </h2>
             <p class="leading-relaxed text-base">
               {{ task.description }}

@@ -28,22 +28,25 @@ class Task(models.Model):
         ('Admin Building', 'Admin Building'),
         ('Science Building', 'Science Building'),
         ('Hope Channel', 'Hope Channel'),
-        ('Church', 'Church')
+        ('Church', 'Church'),
+        ('Other', 'Other'),
         )
 
-    CATEGORY_CHOICES = (
+    Task_CHOICES = (
         ('Assistant', 'Assistant'),
+        ('Cleaning', 'Cleaning'),
+        ('Church Service', 'Church Service'),
         ('Monitor', 'Monitor'),
-        ('Janitor', 'Janitor'),
-        ('Supervisor', 'Supervisor'),
-        ('Video Editor', 'Video Editor'),
-        ('Chaplain', 'Chaplain')
+        ('Tutoring', 'Tutoring'),
+        ('Supervising', 'Supervising'),
+        ('Other', 'Other'),
     )
     date_added = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100)
+    time = models.TimeField(auto_now=False, auto_now_add=False)
     on_date = models.DateField(null=True)
     location = models.CharField(choices=LOCATION_CHOICES, max_length=100)
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=50)
+    task = models.CharField(choices=Task_CHOICES, max_length=50, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     department = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     worker = models.ForeignKey('Worker', null=True, blank=True, on_delete=models.SET_NULL)
