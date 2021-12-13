@@ -5,12 +5,13 @@ from django.db.models.signals import post_save
 # Create your models here.
 
 class User(AbstractUser):
-    pass
+    is_supervisor = models.BooleanField(default=False)
+    is_worker = models.BooleanField(default=True)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     def __str__(self) -> str:
-        return self.user.username
+        return f'{self.user.first_name} {self.user.last_name}'
 
 class Task(models.Model):
     LOCATION_CHOICES = (
@@ -44,7 +45,8 @@ class Task(models.Model):
     location = models.CharField(choices=LOCATION_CHOICES, max_length=100)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=50)
     description = models.TextField(null=True, blank=True)
-    worker = models.ForeignKey('Worker', on_delete=CASCADE)
+    department = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    worker = models.ForeignKey('Worker', null=True, blank=True, on_delete=models.SET_NULL)
     #functions
     def __str__(self):
         return f'{self.title} {self.date_added}'
@@ -52,9 +54,9 @@ class Task(models.Model):
 
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=CASCADE)
-    organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    department = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     def __str__(self):
-        return self.user.username, self.user.first_name
+        return f'{self.user.first_name} {self.user.last_name}'
 
 def user_created(sender, instance, created, **kwargs):
     if created:

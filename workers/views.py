@@ -4,18 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from tasks.views import Worker
 from django.urls import reverse
 from .forms import WorkerModelForm
+from .mixins import SupervisorAndLoginRequiredMixin
 # Create your views here.
 
-
-
-class WorkerListView(LoginRequiredMixin, generic.ListView):
-    template_name = 'workers/worker_list.html'
-
-    def get_queryset(self):
-        return Worker.objects.all()
-
-
-class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
+class WorkerCreateView(SupervisorAndLoginRequiredMixin, generic.CreateView):
     template_name = 'workers/worker_create.html'
     form_class = WorkerModelForm
     
@@ -24,15 +16,16 @@ class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         worker = form.save(commit=False)
-        worker.organization = self.request.user.userprofile
+        worker.department = self.request.user.userprofile
         worker.save()
         return super(WorkerCreateView, self).form_valid(form)
 
-class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
+class WorkerDetailView(SupervisorAndLoginRequiredMixin, generic.DetailView):
     template_name = 'workers/worker_detail.html'
     context_object_name = 'worker'
     def get_queryset(self):
-        return Worker.objects.all()
+        department = self.request.user.userprofile
+        return Worker.objects.filter(department=department)
 
 # class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
 #     template_name =
@@ -40,13 +33,14 @@ class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
 # class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 #     template_name =
 
-class WorkerListView(LoginRequiredMixin, generic.ListView):
+class WorkerListView(SupervisorAndLoginRequiredMixin, generic.ListView):
     template_name = 'workers/worker_list.html'
     context_object_name = 'worker'
     def get_queryset(self):
-        return Worker.objects.all()
+        department = self.request.user.userprofile
+        return Worker.objects.filter(department=department)
 
-class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
+class WorkerUpdateView(SupervisorAndLoginRequiredMixin, generic.UpdateView):
     template_name = 'workers/worker_update.html'
     form_class = WorkerModelForm
     
@@ -56,12 +50,13 @@ class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_queryset(self):
         return Worker.objects.all()
 
-class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
+class WorkerDeleteView(SupervisorAndLoginRequiredMixin, generic.DeleteView):
     template_name = 'workers/worker_delete.html'
     context_object_name = 'worker'
 
     def get_queryset(self):
-        return Worker.objects.all()
+        department = self.request.user.userprofile
+        return Worker.objects.filter(department=department)
 
     def get_success_url(self):
         return reverse('workers:worker-list')
