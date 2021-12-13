@@ -1,0 +1,16 @@
+{% extends 'base.html' %} 
+{% block content %}
+<!-- <button href="{% url 'leads:lead-list' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" >
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
+  </svg>
+</button> -->
+<a href="{% url 'workers:worker-list' %}"  >Back</a>
+<hr />
+<h1>Are you sure you want to delete this worker?</h1>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Create</button>
+</form>
+
+{% endblock content %}

@@ -1,10 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.deletion import CASCADE
+from django.db.models.signals import post_save
 # Create your models here.
 
 class User(AbstractUser):
     pass
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self) -> str:
+        return self.user.username
 
 class Task(models.Model):
     LOCATION_CHOICES = (
@@ -46,6 +52,12 @@ class Task(models.Model):
 
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=CASCADE)
-    job_title = models.CharField(max_length=100, blank=True)
+    organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     def __str__(self):
-        return self.user.username
+        return self.user.username, self.user.first_name
+
+def user_created(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance) 
+
+post_save.connect(user_created, sender=User)

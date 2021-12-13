@@ -1,32 +1,33 @@
 from django.http.request import HttpRequest
 from django.shortcuts import redirect, render
-from tasks.forms import TaskModelForm
+from tasks.forms import CustomUserCreationForm, TaskModelForm
 from .models import Task, Worker
 from django.urls import reverse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, DeleteView, UpdateView
-
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 class HomePageView(TemplateView):
     template_name = 'home.html'
 
-class TaskListView(ListView):
+class TaskListView(LoginRequiredMixin, ListView):
     template_name = 'tasks/task_list.html'
     queryset = Task.objects.all()
     context_object_name = 'tasks'
 
-class TaskDetailView(DetailView):
+class TaskDetailView(LoginRequiredMixin, DetailView):
     template_name = 'tasks/task_detail.html'
     queryset = Task.objects.all()
     context_object_name = 'task'
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     template_name = 'tasks/task_create.html'
     form_class = TaskModelForm
     context_object_name = 'task'
     def get_success_url(self):
         return reverse("tasks:task-list")
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'tasks/task_update.html'
     queryset = Task.objects.all()
     form_class = TaskModelForm
@@ -34,12 +35,18 @@ class TaskUpdateView(UpdateView):
     def get_success_url(self):
         return reverse("tasks:task-list")
 
-class TaskDeleteView(DeleteView):
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'tasks/task_delete.html'
     queryset = Task.objects.all()
     def get_success_url(self):
         return reverse("tasks:task-list")
     
+class SignupView(CreateView):
+    template_name = 'registration/signup.html'
+    form_class = CustomUserCreationForm
+
+    def get_success_url(self):
+        return reverse('login')  
 
 
 

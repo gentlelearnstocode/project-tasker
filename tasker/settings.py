@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tasks'
+    'tasks',
+    'workers',
 ]
 
 MIDDLEWARE = [
@@ -109,3 +110,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'tasks.User'
+LOGIN_REDIRECT_URL = '/tasks'
+LOGIN_URL = '/login'
+#register static files
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+STATIC_ROOT = 'static_root'
