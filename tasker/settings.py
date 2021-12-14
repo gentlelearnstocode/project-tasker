@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tasks',
     'workers',
+    "crispy_forms",
+    "crispy_tailwind",
 ]
 
 MIDDLEWARE = [
@@ -119,3 +121,5 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = 'static_root'
 LOGOUT_REDIRECT_URL = ''
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+CRISPY_TEMPLATE_PACK = "tailwind"
