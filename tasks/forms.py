@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import fields, models, widgets
-from .models import Task, User
+from .models import Task, User, Worker
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.contrib.auth import get_user_model
 
@@ -29,7 +29,14 @@ class CustomUserCreationForm(UserCreationForm):
                   'email')
         field_classes = {'username': UsernameField}
 
+class AssignWorkerForm(forms.Form):
+    worker = forms.ModelChoiceField(queryset=Worker.objects.none())
 
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        workers = Worker.objects.filter(department=request.user.userprofile)
+        super(AssignWorkerForm, self).__init__(*args, **kwargs)
+        self.fields['worker'].queryset = workers
 
 
 # LOCATION_CHOICES = (

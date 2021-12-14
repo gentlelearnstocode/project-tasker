@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+ {% block content %}
+<a href="{% url 'tasks:task-list' %}">Back</a>
+<hr />
+<h1>Assign a worker for this task</h1>
+<form method="POST">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Assign</button>
+</form>
+{% endblock content %}

@@ -1,6 +1,7 @@
 from django.http.request import HttpRequest
 from django.shortcuts import redirect, render
-from tasks.forms import CustomUserCreationForm, TaskModelForm
+from django.views import generic
+from tasks.forms import AssignWorkerForm, CustomUserCreationForm, TaskModelForm
 from workers.mixins import SupervisorAndLoginRequiredMixin
 from .models import Task, Worker
 from django.urls import reverse
@@ -18,11 +19,21 @@ class TaskListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         if user.is_supervisor:
-            queryset = Task.objects.filter(department=user.userprofile)
+            queryset = Task.objects.filter(department=user.userprofile, worker__isnull = False)
         else:
-            queryset = Task.objects.filter(department=user.worker.department)
+            queryset = Task.objects.filter(department=user.worker.department, worker__isnull = False)
             queryset = queryset.filter(worker__user=user)
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        context = super(TaskListView, self).get_context_data(**kwargs)
+        if user.is_supervisor:
+            queryset = Task.objects.filter(department=user.userprofile, worker__isnull=True)
+            context.update({
+                'unassigned_tasks': queryset
+            })
+        return context
 
 class TaskDetailView(LoginRequiredMixin, DetailView):
     template_name = 'tasks/task_detail.html'
@@ -79,6 +90,28 @@ class SignupView(CreateView):
     def get_success_url(self):
         return reverse('login')  
  
+class AssignWorkerView(SupervisorAndLoginRequiredMixin, generic.FormView):
+    template_name = 'tasks/assign_worker.html'
+    form_class = AssignWorkerForm
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(AssignWorkerView, self).get_form_kwargs(**kwargs)
+        kwargs.update ({
+            'request': self.request
+        })
+        return kwargs
+
+    def form_valid(self, form):
+        worker = form.cleaned_data['worker']
+        task = Task.objects.get(id=self.kwargs['pk'])
+        task.worker = worker
+        task.save()
+        return super(AssignWorkerView, self).form_valid(form) 
+
+    def get_success_url(self):
+        return reverse("tasks:task-list") 
+
+
 
 # def tasks_list(request):
 #     tasks = Task.objects.all()
